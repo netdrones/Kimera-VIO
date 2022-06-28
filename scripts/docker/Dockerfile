@@ -4,7 +4,7 @@ FROM ubuntu:18.04
 MAINTAINER Antoni Rosinol "arosinol@mit.edu"
 
 # To avoid tzdata asking for geographic location...
-ENV DEBIAN_frontend noninteractive
+ARG DEBIAN_frontend=noninteractive
 
 # Set the working directory to /root
 ENV DIRPATH /root
@@ -29,7 +29,7 @@ RUN cd gtsam && \
     make -j$(nproc) install
 
 # Install OpenCV for Ubuntu 18.04
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
       build-essential cmake unzip pkg-config \
       libjpeg-dev libpng-dev libtiff-dev \
       libvtk6-dev \
@@ -104,6 +104,7 @@ RUN python3.5 $(which pip3) install ipython prompt_toolkit
 ADD https://api.github.com/repos/ToniRV/Kimera-VIO-Evaluation/git/refs/heads/master version.json
 RUN git clone https://github.com/ToniRV/Kimera-VIO-Evaluation.git
 # We use `pip3 install -e .` so that Jinja2 has access to the webiste template...
+RUN apt-get update && apt-get install -y libffi6 libffi-dev
 RUN cd Kimera-VIO-Evaluation && python3.5 $(which pip3) install -e .
 
 # Add credentials on build
